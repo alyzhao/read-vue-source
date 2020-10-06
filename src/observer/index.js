@@ -1,10 +1,27 @@
+import { arrayMethods } from './array';
+
 class Observer {
   constructor(value) {
     // 使用 defineProperty 重新定义属性
 
+    Object.defineProperty(value, '__ob__', {
+      enumerable: false,
+      configurable: false,
+      value: this,
+    });
 
+    if (Array.isArray(value)) {
+      value.__proto__ = arrayMethods;
+      this.observeArray(value);
+    } else {
+      this.walk(value);
+    }
+  }
 
-    this.walk(value);
+  observeArray(value) {
+    value.forEach((item) => {
+      observe(item); // 观测数组对象中的属性
+    });
   }
 
   walk(data) {
@@ -33,6 +50,10 @@ function defineReactive(data, key, value) {
 
 export function observe(data) {
   if (data === null || typeof data !== 'object') {
+    return;
+  }
+
+  if (data.__ob__) {
     return;
   }
 

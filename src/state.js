@@ -2,7 +2,6 @@ import { observe } from './observer/index';
 
 export function initState(vm) {
   const opts = vm.$options;
-  console.log('options', opts);
 
   if (opts.props) {
     initProps(vm);
@@ -33,7 +32,6 @@ function initData(vm) {
   data = typeof data === 'function' ? data.call(vm) : data;
 
   vm._data = data;
-  console.log(data)
   // 数据的劫持方案 Object.defineProperty
   // 数组单独处理
   observe(data);
