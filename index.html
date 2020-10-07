@@ -5,7 +5,10 @@
   <title>read vue source</title>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    hello <span>world</span>
+    <p><span>{{a}}</span></p>
+  </div>
   <script src="dist/umd/vue.js"></script>
   <script>
     const vm = new Vue({
@@ -20,6 +23,14 @@
     });
     vm._data.c.push({a: 4});
     console.log(vm._data);
+    /*
+    渲染操作:
+      1. 先找render方法
+      2. 没有render找template
+      3. 没有template找el中的内容作为模板
+
+    使用 ast 解析 template 成 render 函数
+    */
   </script>
 </body>
 </html>
