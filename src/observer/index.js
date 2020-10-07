@@ -1,14 +1,11 @@
 import { arrayMethods } from './array';
+import { defineProperty } from '../util';
 
 class Observer {
   constructor(value) {
     // 使用 defineProperty 重新定义属性
 
-    Object.defineProperty(value, '__ob__', {
-      enumerable: false,
-      configurable: false,
-      value: this,
-    });
+    defineProperty(value, '__ob__', this);
 
     if (Array.isArray(value)) {
       value.__proto__ = arrayMethods;

@@ -1,4 +1,5 @@
 import { observe } from './observer/index';
+import { proxy } from './util';
 
 export function initState(vm) {
   const opts = vm.$options;
@@ -30,8 +31,13 @@ function initMethods() {}
 function initData(vm) {
   let data = vm.$options.data;
   data = typeof data === 'function' ? data.call(vm) : data;
-
   vm._data = data;
+
+  for (let key in data) {
+    // 将实例 _data 中的属性代理到实例属性上
+    proxy(vm, '_data', key);
+  }
+
   // 数据的劫持方案 Object.defineProperty
   // 数组单独处理
   observe(data);
