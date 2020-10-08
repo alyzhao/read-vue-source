@@ -15,6 +15,18 @@
   </div>
   <script src="dist/umd/vue.js"></script>
   <script>
+    Vue.mixin({
+      created: function a() {
+        console.log('mixin created1');
+      }
+    });
+
+    Vue.mixin({
+      created: function b() {
+        console.log('mixin created2');
+      }
+    });
+
     const vm = new Vue({
       el: '#app',
       data() {
@@ -24,9 +36,12 @@
           c: [{a: 1}, {a: 2}, {a: 3}]
         };
       },
+      created: function c() {
+        console.log('vm created');
+      }
     });
     vm._data.c.push({a: 4});
-    console.log(vm._data);
+    console.log(vm.$options);
     /*
     渲染操作:
       1. 先找render方法

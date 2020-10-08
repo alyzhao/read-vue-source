@@ -36,7 +36,6 @@ function createElement(tag, data={}, ...children) {
 }
 
 function createTextVnode(text) {
-  console.log('createTextVnode', text);
   return vnode(undefined, undefined, undefined, undefined, text);
 }
 

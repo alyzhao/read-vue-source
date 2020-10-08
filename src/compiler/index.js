@@ -5,13 +5,11 @@ import { generate } from './generate';
 export function compileToFunctions (template) {
   // 1. 生成 ast 树
   const ast = parseHTML(template);
-  console.log('ast', ast);
 
   // 2. 优化静态节点
 
   // 3. 根据 ast 树 生成 render 代码
   const code = generate(ast);
-  console.log(code);
 
   // 4. 将字符串变成函数
 

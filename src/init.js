@@ -1,15 +1,23 @@
 import { initState } from './state';
 import { compileToFunctions } from './compiler/index';
-import { mountComponent } from './lifecycle';
+import { mountComponent, callhook } from './lifecycle';
+import { mergeOptions } from './util';
 
 export function initMixin(Vue) {
   Vue.prototype._init = function (options) {
     const vm = this;
-    vm.$options = options;
+
+    // 将用户自定义的options和Vue全局的options合并
+    // 如果是在子组件当中, 不应该是 Vue.options 和 当前的 options 合并, 所以合并的是 vm.constructor.options
+    vm.$options = mergeOptions(vm.constructor.options, options);
+
+    callhook(vm, 'beforeCreate');
 
     // 初始化状态, 劫持数据, 更新视图
     // vue 响应式数据原理
     initState(vm);
+
+    callhook(vm, 'created');
 
     // 渲染模板
     if (vm.$options.el) {
@@ -34,6 +42,5 @@ export function initMixin(Vue) {
 
     // 挂载组件
     mountComponent(vm, el);
-
   }
 }

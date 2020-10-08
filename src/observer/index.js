@@ -33,11 +33,9 @@ function defineReactive(data, key, value) {
   observe(value); // 如果当前观察的对象不是简单数据类型继续观测
   Object.defineProperty(data, key, {
     get() {
-      console.log('get: ' + key, value);
       return value;
     },
     set(newValue) {
-      console.log('set: ' + key, newValue);
       if (newValue === value) return;
       observe(newValue); // 如果设置的值也是对象继续观测
       value = newValue;
