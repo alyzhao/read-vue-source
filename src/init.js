@@ -21,6 +21,7 @@ export function initMixin(Vue) {
     const vm = this;
     const options = vm.$options;
     el = document.querySelector(el);
+    vm.$el = el; // 将 el 赋值给 vm.$el 是为了第一次挂载真实节点时可以传入 oldNode
 
     if (!options.render) {
       let { template } = options;
