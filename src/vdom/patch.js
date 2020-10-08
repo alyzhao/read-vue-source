@@ -7,6 +7,7 @@ export function patch (oldNode, vnode) {
   const parentNode = oldNode.parentNode; // https://developer.mozilla.org/zh-CN/docs/Web/API/Node/parentNode 获取父节点
   parentNode.insertBefore(el, oldNode.nextSibling); // 插入节点
   parentNode.removeChild(oldNode);
+  return el;
 }
 
 function createElm(vnode) {

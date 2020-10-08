@@ -1,5 +1,6 @@
 import { arrayMethods } from './array';
 import { defineProperty } from '../util';
+import Dep from './dep';
 
 class Observer {
   constructor(value) {
@@ -30,15 +31,20 @@ class Observer {
 }
 
 function defineReactive(data, key, value) {
+  const dep = new Dep();
   observe(value); // 如果当前观察的对象不是简单数据类型继续观测
   Object.defineProperty(data, key, {
     get() {
+      if (Dep.target) {
+        dep.depend();
+      }
       return value;
     },
     set(newValue) {
       if (newValue === value) return;
       observe(newValue); // 如果设置的值也是对象继续观测
       value = newValue;
+      dep.notify();
     },
   });
 }
