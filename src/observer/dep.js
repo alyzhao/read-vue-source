@@ -1,10 +1,19 @@
+let id = 0;
+
 export default class Dep {
   constructor() {
     this.subs = []; // 存放 watcher, 每个属性会初始化一个 dep, dep 上存放 watcher
+    this.id = id++;
   }
 
   depend() {
-    this.subs.push(Dep.target);
+    console.log('Dep.target', Dep.target);
+    Dep.target.addDep(this); // 实现 Dep 和 watcher 双向绑定
+  }
+
+  addSub(watcher) {
+    console.log('watcher', watcher)
+    this.subs.push(watcher);
   }
 
   notify() {

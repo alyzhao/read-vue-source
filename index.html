@@ -7,11 +7,7 @@
 <body>
   <div id="app" style="color: red; font-size: 14px;">
     hello <span>world</span>
-    <p><span>it's {{a}} another is {{b}}</span></p>
-    <ul>
-      <li style="color: blue">c[0].a: {{c[0].a}}</li>
-      <li>c[1].a: {{c[1].a}}</li>
-    </ul>
+    <p><span>it's {{c}} another is</span></p>
   </div>
   <script src="dist/umd/vue.js"></script>
   <script>
@@ -33,18 +29,16 @@
         return {
           a: 1,
           b: 2,
-          c: [{a: 1}, {a: 2}, {a: 3}]
+          c: [1, 2, 3]
         };
       },
       created: function c() {
         console.log('vm created');
       }
     });
-    vm.c.push({a: 4});
-    console.log(vm.$options);
-
     setTimeout(() => {
-      vm.a = 'new 1'
+      vm.c.push(4);
+      console.log('xxx')
     }, 1000);
 
     /*

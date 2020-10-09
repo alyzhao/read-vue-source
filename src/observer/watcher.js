@@ -13,11 +13,23 @@ export default class Watcher {
     this.options = options;
     this.id = id++;
 
+    this.deps = [];
+    this.depIds = new Set();
+
     if (typeof exprOrFn === 'function') {
       this.getter = exprOrFn;
     }
 
     this.get();
+  }
+
+  addDep(dep) {
+    const depId = dep.id;
+    if (!this.depIds.has(depId)) {
+      this.deps.push(dep);
+      this.depIds.add(depId);
+      dep.addSub(this);
+    }
   }
 
   get() {
