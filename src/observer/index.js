@@ -42,10 +42,6 @@ function defineReactive(data, key, value) {
           childObserver.dep.depend(); // 这里主要是数组可以调用 __ob__.dep 上的 notify 来更新视图
         }
       }
-      // 这不是每个 value 都会加上 dep 么 根本没必要判断这个
-
-      console.log('childObserver', childObserver.dep);
-
       return value;
     },
     set(newValue) {

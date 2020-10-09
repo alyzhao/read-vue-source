@@ -7,12 +7,10 @@ export default class Dep {
   }
 
   depend() {
-    console.log('Dep.target', Dep.target);
     Dep.target.addDep(this); // 实现 Dep 和 watcher 双向绑定
   }
 
   addSub(watcher) {
-    console.log('watcher', watcher)
     this.subs.push(watcher);
   }
 
