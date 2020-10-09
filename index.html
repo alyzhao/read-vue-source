@@ -11,41 +11,26 @@
   </div>
   <script src="dist/umd/vue.js"></script>
   <script>
-    Vue.mixin({
-      created: function a() {
-        console.log('mixin created1');
-      }
-    });
-
-    Vue.mixin({
-      created: function b() {
-        console.log('mixin created2');
-      }
-    });
-
     const vm = new Vue({
       el: '#app',
       data() {
         return {
           a: 1,
           b: 2,
-          c: [1, 2, 3]
+          c: [1, 2, 3],
+          w: { w: { w: 1 } },
         };
       },
-      created: function c() {
-        console.log('vm created');
+      watch: {
+        'w.w.w': function(val, oldVal) {
+          console.log('current: ' + val + ', oldVal: ' + oldVal);
+        }
       }
     });
-    vm.c.push(5);
-    vm.c.push(6);
-    vm.c.push(7);
 
     setTimeout(() => {
-      vm.c.push(4);
-      vm.$nextTick(() => {
-        console.log('nextTick', vm.$el.innerHTML);
-      });
-    }, 1000);
+      vm.w.w.w = 2;
+    }, 500)
 
     /*
     渲染操作:

@@ -19,7 +19,7 @@ export function mountComponent(vm, el) {
   // 先调用 render 创建虚拟节点, 再将虚拟节点渲染到页面上
   const watcher = new Watcher(vm, updateComponent, () => {
     callhook(vm, 'updated'); // 初次渲染的时候不应该调用 beforeUpdate 生命周期函数
-  }, true);
+  }, { user: false });
   callhook(vm, 'mounted');
 }
 

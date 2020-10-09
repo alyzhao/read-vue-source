@@ -1,5 +1,6 @@
 import { observe } from './observer/index';
 import { proxy, nextTick } from './util';
+import Watcher from './observer/watcher';
 
 export function initState(vm) {
   const opts = vm.$options;
@@ -44,10 +45,42 @@ function initData(vm) {
 }
 
 function initComputed() {}
-function initWatch() {}
+function initWatch(vm) {
+  const { watch } = vm.$options;
+  for (var key in watch) {
+    const handler = watch[key];
+    if (Array.isArray(handler)) {
+      handler.forEach((handle) => {
+        createWatcher(vm, key, handle);
+      });
+    } else {
+      createWatcher(vm, key, handler);
+    }
+  }
+}
+
+function createWatcher(vm, exprOrFn, handler, options = {}) {
+  if (typeof handler === 'object' && handler !== null) {
+    handler = handler.handler;
+    options = handler;
+  }
+
+  if (typeof handler === 'string') {
+    handler = vm[handler];
+  }
+
+  vm.$watch(exprOrFn, handler, options);
+}
 
 export function stateMixin(Vue) {
   Vue.prototype.$nextTick = (cb) => {
     nextTick(cb);
+  };
+
+  Vue.prototype.$watch = function (exprOrFn, cb, options = {}) {
+    const watch = new Watcher(this, exprOrFn, cb, { ...options, user: true })
+    if (options.immediate) {
+      cb();
+    }
   };
 }

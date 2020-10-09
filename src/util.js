@@ -22,8 +22,6 @@ const strats = {
   data(parentValue, childValue) {
     return childValue;
   },
-  computed() {},
-  watch() {},
 }
 
 const LIFECYCLE_HOOKS = [

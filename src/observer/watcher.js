@@ -7,11 +7,12 @@ export default class Watcher {
   /**
    * @param{Boolean} options 是否是更新试图
    */
-  constructor(vm, exprOrFn, cb, options) {
+  constructor(vm, exprOrFn, cb, options = {}) {
     this.vm = vm;
     this.exprOrFn = exprOrFn
     this.cb = cb;
     this.options = options;
+    this.user = Boolean(options.user);
     this.id = id++;
 
     this.deps = [];
@@ -19,9 +20,22 @@ export default class Watcher {
 
     if (typeof exprOrFn === 'function') {
       this.getter = exprOrFn;
+    } else {
+      // 目前只有 options 上的 watch 用到, 这里传过来的是字符串
+      // 这时候应该去取值
+      this.getter = function () {
+        let result = vm;
+        const arrProperties = exprOrFn.split('.');
+        // 只有每次去取值 调用 get() 的时候才会进行依赖收集
+        arrProperties.forEach((p) => {
+          result = result[p];
+        });
+        return result;
+      }
     }
 
-    this.get();
+    this.value = this.get(); // 将当前 watch 属性的值保存下来
+    console.log(this.value);
   }
 
   addDep(dep) {
@@ -35,9 +49,9 @@ export default class Watcher {
 
   get() {
     pushTarget(this);
-    this.getter && this.getter();
+    const value = this.getter && this.getter();
     popTarget();
-    console.log('update');
+    return value;
   }
 
   update() {
@@ -46,7 +60,12 @@ export default class Watcher {
   }
 
   run() {
-    this.get();
+    const oldValue = this.value;
+    const newValue = this.get();
+    this.value = newValue;
+    if (this.options.user) {
+      this.cb.call(this.vm, newValue, oldValue);
+    }
   }
 }
 
@@ -57,7 +76,9 @@ let pedding = false;
 function flushSchedulerQueue() {
   queue.forEach((watcherItem) => {
     watcherItem.run();
-    watcherItem.cb();
+    if (!watcherItem.user) {
+      watcherItem.cb();
+    }
   });
   pedding = false;
   queue = [];
