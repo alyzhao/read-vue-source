@@ -42,7 +42,9 @@
 
     setTimeout(() => {
       vm.c.push(4);
-      console.log('xxx')
+      vm.$nextTick(() => {
+        console.log('nextTick', vm.$el.innerHTML);
+      });
     }, 1000);
 
     /*

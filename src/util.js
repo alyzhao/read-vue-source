@@ -87,3 +87,49 @@ export function mergeOptions(parent, child) {
 
   return options;
 }
+
+let callbacks = []; // nextTick 中需要执行的操作, 前面的应该是 watcher 里的 update
+let pedding = false;
+const flushCallbacks = () => {
+  // 这里不应该用 pop
+  callbacks.forEach((cb) => {
+    cb();
+  });
+
+  pedding = false;
+  callbacks = [];
+}
+
+let timerFunc;
+if (Promise) {
+  timerFunc = () => {
+    Promise.resolve().then(() => {
+      flushCallbacks();
+    })
+  }
+} else if (MutationObserver) {
+  const obaserve = new MutationObserver(flushCallbacks);
+  const textNode = document.createTextNode(1);
+  obaserve.observe(textNode, { characterData: true });
+  timerFunc = () => {
+    textNode.textContent = 2;
+  }
+} else if (setImmediate) {
+  timerFunc = () => {
+    setImmediate(flushCallbacks);
+  }
+} else {
+  timerFunc = () => {
+    setTimeout(() => {
+      flushCallbacks();
+    }, 0);
+  }
+}
+
+export function nextTick(cb) {
+  callbacks.push(cb);
+  if (!pedding) {
+    pedding = true;
+    timerFunc();
+  }
+}
