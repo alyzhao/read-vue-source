@@ -27,7 +27,15 @@ const vm1 = new Vue({
     }
   },
 });
-const render1 = compileToFunctions(`<div id="a" style="color: red;" class="a">{{name}}</div>`);
+const render1 = compileToFunctions(`<div>
+  <ul>
+    <li style="background-color: blue" key="A">A</li>
+    <li style="background-color: yellow" key="B">B</li>
+    <li style="background-color: pink" key="C">C</li>
+    <li style="background-color: lightcoral" key="D">D</li>
+    <li style="background-color: lightcyan" key="E">E</li>
+  </ul>
+</div>`);
 const vnode1 = render1.call(vm1);
 document.body.appendChild(createElm(vnode1));
 
@@ -38,7 +46,15 @@ const vm2 = new Vue({
     }
   },
 });
-const render2 = compileToFunctions(`<div id="b" style="background-color: blue;" class="b">{{name}}</div>`);
+const render2 = compileToFunctions(`<div>
+  <ul>
+    <li style="background-color: lightcyan" key="E">E</li>
+    <li style="background-color: lightcoral" key="D">D</li>
+    <li style="background-color: pink" key="C">C</li>
+    <li style="background-color: yellow" key="B">B</li>
+    <li style="background-color: blue" key="A">A</li>
+  </ul>
+</div>`);
 const vnode2 = render2.call(vm2);
 
 setTimeout(() => {
