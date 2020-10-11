@@ -6,8 +6,8 @@
 </head>
 <body>
   <div id="app" style="color: red; font-size: 14px;">
-    hello <span>world</span>
-    <p><span>it's {{c}} another is</span></p>
+    hello <span key="12">world {{a}}</span>
+    <p><span>sum is {{sum}}</span></p>
   </div>
   <script src="dist/umd/vue.js"></script>
   <script>
@@ -21,15 +21,18 @@
           w: { w: { w: 1 } },
         };
       },
-      watch: {
-        'w.w.w': function(val, oldVal) {
-          console.log('current: ' + val + ', oldVal: ' + oldVal);
-        }
-      }
-    });
+      computed: {
+        sum() {
 
+          console.log('sum', this.a, this.b)
+          return this.a + this.b;
+        }
+      },
+    });
+    // vm.a = 3;
+    // console.log(vm.sum);
     setTimeout(() => {
-      vm.w.w.w = 2;
+      vm.a = 3;
     }, 500)
 
     /*

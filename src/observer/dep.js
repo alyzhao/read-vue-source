@@ -15,6 +15,7 @@ export default class Dep {
   }
 
   notify() {
+    console.log(this);
     this.subs.forEach(watcher => {
       watcher.update();
     });
@@ -22,12 +23,14 @@ export default class Dep {
 }
 
 Dep.target = null;
-
+const stack = []; // watch 栈, 用于当有 computed watcher 和 渲染 watcher 时, dep 只收集了 computed watcher 的情况
 // 这样能剔除掉在 data 中但是没有用在试图渲染中的属性
 export function pushTarget(watcher) {
+  stack.push(watcher);
   Dep.target = watcher;
 }
 
 export function popTarget() {
-  Dep.target = null;
+  stack.pop();
+  Dep.target = stack[stack.length - 1] ? stack[stack.length - 1] : null;
 }

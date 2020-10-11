@@ -4,7 +4,17 @@ import Watcher from './observer/watcher';
 export function lifecycleMixin(Vue) {
   Vue.prototype._update = function (vnode) {
     const vm = this;
-    vm.$el = patch(vm.$el, vnode); // 以前的 $el 已经被删除掉了, 这里需要重新赋值, 否则在每次更新的时候还是拿到的以前的 el
+
+    const prevVnode = vm._vnode;
+
+    // 初次渲染时还没有 vnode 给 vm 加上 _vnode 属性目的是为了之后的渲染传入 vnode 用来做 diff, 优化性能
+    if (!prevVnode) {
+      // 以前的 $el 已经被删除掉了, 这里需要重新赋值, 否则在每次更新的时候还是拿到的以前的 el
+      vm.$el = patch(vm.$el, vnode);
+    } else {
+      vm.$el = patch(prevVnode, vnode);
+    }
+    vm._vnode = vnode;
   }
 }
 

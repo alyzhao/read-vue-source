@@ -1,6 +1,7 @@
 import { observe } from './observer/index';
 import { proxy, nextTick } from './util';
 import Watcher from './observer/watcher';
+import Dep from './observer/dep';
 
 export function initState(vm) {
   const opts = vm.$options;
@@ -44,7 +45,49 @@ function initData(vm) {
   observe(data);
 }
 
-function initComputed() {}
+function initComputed(vm) {
+  const { computed } = vm.$options;
+  const watchers = vm._computedWatchers = {}; // 给每个计算属性的key加上一个 watcher
+  // 这样在获取 data 上的值时, data上的值时会自动得将 watcher 保存起来
+  // 在 data 上得值改变时, 只要调用对应 watcher 上的方法就能更新 computed
+  for (let key in computed) {
+    const userDef = computed[key];
+    const getter = typeof userDef === 'function' ? userDef : userDef.get;
+    watchers[key] = new Watcher(vm, getter, () => {}, { lazy: true });
+    defineComputed(vm, key, userDef);
+  }
+}
+
+function defineComputed(target, key, userDef) {
+  const sharePropertyDefinition = {
+    enumerable: true,
+    configurable: true,
+    get: () => {},
+    set: () => {},
+  };
+  if (typeof userDef === 'function') {
+    sharePropertyDefinition.get = createComputedGetter(key);
+  } else {
+    sharePropertyDefinition.get = createComputedGetter(key);
+    sharePropertyDefinition.set = userDef.set;
+  }
+
+  Object.defineProperty(target, key, sharePropertyDefinition);
+}
+
+function createComputedGetter(key) {
+  return function() {
+    const watcher = this._computedWatchers[key];
+    if (watcher && watcher.dirty) {
+      watcher.evaluate();
+      if (Dep.target) {
+        watcher.depend();
+      }
+    }
+    return watcher.value;
+  }
+}
+
 function initWatch(vm) {
   const { watch } = vm.$options;
   for (var key in watch) {
