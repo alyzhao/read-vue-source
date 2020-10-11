@@ -71,8 +71,30 @@ function updateChildren(oldChildren, newChildren, parent) {
   let newEndIndex = newChildren.length - 1;
   let newEndVnode = newChildren[newEndIndex];
 
+  /**
+   * 把子元素的节点的 key 和 index 做一个映射
+   */
+  function makeIndexByKey(children) {
+    const result = {};
+    children.forEach((child, index) => {
+      if (child.key !== undefined) {
+        result[child.key] = index;
+      }
+    });
+
+    return result;
+  }
+
+  const map = makeIndexByKey(oldChildren);
+
   while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
-    if (isSameVnode(oldStartVnode, newStartVnode)) {
+    if (!oldStartVnode) {
+      // 如果为null则跳过, 节点已经被移动过
+      oldStartVnode = oldChildren[++oldStartIndex];
+    } else if (!oldEndVnode) {
+      // 如果从后往前比发现为 null, 那么跳过并向前移动一个位置
+      oldEndVnode = oldChildren[--oldEndIndex];
+    } else if (isSameVnode(oldStartVnode, newStartVnode)) {
       patch(oldStartVnode, newStartVnode);
       oldStartVnode = oldChildren[++oldStartIndex];
       newStartVnode = newChildren[++newStartIndex];
@@ -91,15 +113,38 @@ function updateChildren(oldChildren, newChildren, parent) {
       oldEndVnode = oldChildren[--oldEndIndex];
       newStartVnode = newChildren[++newStartIndex];
     } else {
-
+      // 暴力对比
+      const moveIndex = map[newStartVnode.key];
+      if (moveIndex === undefined) {
+        // 此时新的子元素没有可以复用的旧子元素
+        parent.insertBefore(createElm(newStartVnode), oldStartVnode.el);
+      } else {
+        const moveVnode = oldChildren[moveIndex];
+        parent.insertBefore(moveVnode.el, oldStartVnode.el);
+        oldChildren[moveIndex] = null;
+        patch(moveVnode, newStartVnode);
+      }
+      newStartVnode = newChildren[++newStartIndex];
     }
   }
 
   if (newStartIndex <= newEndIndex) {
+    // 新的节点有多的话直接插入头或者尾
+    // 如果是从前往后比较的话直接插入到末尾
+    // 如果是从后往前比较的话直接插入到开头 newChildren[newEndIndex + 1].el 此时头节点是创建过的
     const ele = newChildren[newEndIndex + 1] ? newChildren[newEndIndex + 1].el : null;
-    console.log(ele.el);
     for (let i = newStartIndex; i <= newEndIndex; i++) {
       parent.insertBefore(createElm(newChildren[i]), ele);
+    }
+  }
+
+  if (oldStartIndex <= oldEndIndex) {
+    // 说明老的节点有多的
+    for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+      // 如果老的节点为 null 那么之前已经被移动过了不需要处理否则删除
+      if (oldChildren[i]) {
+        parent.removeChild(oldChildren[i].el);
+      }
     }
   }
 }
