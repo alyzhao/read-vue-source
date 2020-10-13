@@ -7,10 +7,14 @@
 <body>
   <div id="app" style="color: red; font-size: 14px;">
     hello <span key="12">world {{a}}</span>
-    <p><span>sum is {{sum}}</span></p>
   </div>
   <script src="dist/umd/vue.js"></script>
   <script>
+
+    Vue.components('global-components', {
+      template: `<div>global</div>`
+    });
+
     const vm = new Vue({
       el: '#app',
       data() {
@@ -21,19 +25,17 @@
           w: { w: { w: 1 } },
         };
       },
-      computed: {
-        sum() {
-
-          console.log('sum', this.a, this.b)
-          return this.a + this.b;
-        }
-      },
+      components: {
+        a: {
+          template: `<div>hell01</div>`
+        },
+        b: {
+          template: `<div>hello2</div>`
+        },
+      }
     });
-    // vm.a = 3;
-    // console.log(vm.sum);
-    setTimeout(() => {
-      vm.a = 3;
-    }, 500)
+
+    console.log(vm);
 
     /*
     渲染操作:

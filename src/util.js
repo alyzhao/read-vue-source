@@ -22,6 +22,16 @@ const strats = {
   data(parentValue, childValue) {
     return childValue;
   },
+  components(parentValue, childValue) {
+    const res = Object.create(parentValue);
+    if (childValue) {
+      for (let key in childValue) {
+        res[key] = childValue[key];
+      }
+    }
+
+    return res;
+  },
 }
 
 const LIFECYCLE_HOOKS = [
@@ -79,7 +89,11 @@ export function mergeOptions(parent, child) {
     if (strats[key]) {
       options[key] = strats[key](parent[key], child[key]); // 目前只有一个 lifecycle hook 的合并策略
     } else {
-      options[key] = child[key];
+      if (child[key]) {
+        options[key] = child[key];
+      } else {
+        options[key] = parent[key];
+      }
     }
   }
 
