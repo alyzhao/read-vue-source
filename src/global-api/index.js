@@ -17,7 +17,7 @@ export function initGlobalApi (Vue) {
   Vue.options._base = Vue; // 将 Vue 构造函数赋值给 options._base, 目的是在子组件也能拿到父类的构造函数
   Vue.options.components = {};
 
-  Vue.components = function (id, definition) {
+  Vue.component = function (id, definition) {
     definition.name = definition.name || id; // 组件都需要一个 name 默认取 id
 
     definition = this.options._base.extend(definition);
